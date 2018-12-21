@@ -9,3 +9,4 @@
 /captures
 .externalNativeBuild
 serialportjar/release/AndroidPlugin.jar
+gradle/wrapper/gradle-wrapper.properties
