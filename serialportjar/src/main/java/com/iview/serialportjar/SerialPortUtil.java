@@ -121,23 +121,21 @@ public class SerialPortUtil {
         }
     }
 
-    public void setMotorRuning(float alpha, float beta, boolean bRuning) {
+    public void setMotorRuning(float alpha, float beta, int motor1timing, int motor2timing, boolean bRuning) {
         isMotorRuning = bRuning;
         isMotor1Runing = bRuning;
         isMotor2Runing = bRuning;
 
-        if (beta == 0) {
+        if (beta == 0 || motor1timing == 0) {
             isMotor1Runing = false;
         }
 
-        if (alpha == 0) {
+        if (alpha == 0 || motor2timing == 0) {
             isMotor2Runing = false;
         }
 
-        if (alpha == 0 && beta == 0) {
+        if (isMotor1Runing == false && isMotor2Runing == false) {
             isMotorRuning = false;
-            isMotor1Runing = false;
-            isMotor2Runing = false;
         }
 
         Log.e(TAG, "setMotorRuning : " + isMotor1Runing + "," + isMotor2Runing + "," + isMotorRuning);

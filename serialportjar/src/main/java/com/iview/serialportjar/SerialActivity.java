@@ -120,8 +120,17 @@ public class SerialActivity extends UnityPlayerActivity {
             betaVal=0;
         }
 
-        finalAlpha=(int)(alphaVal + 0.5);
-        finalBeta=(int)(betaVal + 0.5);
+        if (alphaVal > 0) {
+            finalAlpha = (int) (alphaVal + 0.5);
+        } else {
+            finalAlpha = (int) (alphaVal - 0.5);
+        }
+
+        if (betaVal > 0) {
+            finalBeta = (int) (betaVal + 0.5);
+        } else {
+            finalBeta = (int)(betaVal - 0.5);
+        }
 
         if(betaVal>0){
             if((betaVal-previousBeta) > betaVal){
@@ -146,7 +155,88 @@ public class SerialActivity extends UnityPlayerActivity {
             motor2time =  4 * finalAlpha * 1000 / (int) time;
         }
 
-        serialPortUtil.setMotorRuning(finalAlpha, finalBeta, true);
+        serialPortUtil.setMotorRuning(finalAlpha, finalBeta, motor1time, motor2time,true);
+
+        Log.e(TAG, "direction1 :" + motor1direction + ",direction2:" + motor2direction + ", step1:" + finalBeta + ", step2:" + finalAlpha + ", pps1:" + motor1time + ",pps2:" + motor2time);
+        controlMotorMulti(motor1direction, motor2direction, finalBeta, finalAlpha, motor1time , motor2time);
+
+        previousAlpha=alphaVal;
+        previousBeta=betaVal;
+/*
+        while (serialPortUtil.isMotorRuning()) {
+            Log.e(TAG, " motoris running");
+        }*/
+    }
+
+    public void controlMotor(float sAlpha, float sBeta, int sTime) {
+
+        Log.e(TAG, "receive controlMotor :" + sAlpha + "," + sBeta + "," + sTime);
+        float alpha = sAlpha;
+        float beta = sBeta;
+        int time = sTime;
+
+        if (bMotorInit == false) {
+            initMotorControl();
+        }
+
+
+
+        motor1direction=0x00;
+        motor2direction=0x00;
+
+        if (beta > 0){
+            motor1direction = 0x01;
+        }
+        if (alpha > 0){
+            motor2direction= 0x01;
+        }
+
+
+        float alphaVal = (float) alpha / xAnglePStep;
+        if (alpha == 0) {
+            alphaVal=0;
+        }
+        float betaVal = (float) beta / yAnglePStep;
+        if (beta == 0) {
+            betaVal=0;
+        }
+
+        if (alphaVal > 0) {
+            finalAlpha = (int) (alphaVal + 0.5);
+        } else {
+            finalAlpha = (int) (alphaVal - 0.5);
+        }
+
+        if (betaVal > 0) {
+            finalBeta = (int) (betaVal + 0.5);
+        } else {
+            finalBeta = (int)(betaVal - 0.5);
+        }
+
+        if(betaVal>0){
+            if((betaVal-previousBeta) > betaVal){
+                finalBeta=Math.abs(finalBeta) + 6;
+                Log.e(TAG, "in : betaPos[ipos]>0" + finalAlpha +";" );
+            }
+        }else if(betaVal<0){
+            if((betaVal-previousBeta) < betaVal){
+                finalBeta=Math.abs(finalBeta) + 6;
+                Log.e(TAG, "in : betaPos[ipos]>0" + finalAlpha +";" );
+
+            }
+        }
+        finalAlpha=Math.min( Math.abs(finalAlpha), 255);
+        finalBeta= Math.min( Math.abs(finalBeta), 255);
+
+        if (time == 0) {
+            motor1time = 0;
+            motor2time = 0;
+        } else {
+            motor1time =  4 * finalBeta * 1000 / (int) time;
+            motor2time =  4 * finalAlpha * 1000 / (int) time;
+        }
+
+        serialPortUtil.setMotorRuning(finalAlpha, finalBeta, motor1time, motor2time,true);
 
         Log.e(TAG, "direction1 :" + motor1direction + ",direction2:" + motor2direction + ", step1:" + finalBeta + ", step2:" + finalAlpha + ", pps1:" + motor1time + ",pps2:" + motor2time);
         controlMotorMulti(motor1direction, motor2direction, finalBeta, finalAlpha, motor1time , motor2time);
